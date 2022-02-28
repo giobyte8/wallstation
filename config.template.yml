@@ -1,0 +1,30 @@
+
+# Directory for runtime info such as logs, databases, cookies and
+# temporary data.
+appdata: ./data/
+
+# Absolute path to wallpapers container directory.
+# Downloaded wallpapers will be placed here
+wallpapers_root: ~/Pictures/Wallpapers
+
+# Downloaded wallpapers will be converted to those resolutions using an effect
+# similar to css 'cover'
+#
+# 1. A folder of same name as 'title' will be created per wallpapers source
+# 2. Every wallpaper in source will be converted to each specified resolution
+#
+# title: A valid folder name
+# w: Width in pixels
+# h: Height in pixels
+resolutions:
+  - title: LGUltrawide
+    w: 3440
+    h: 1440
+  - title: S20Plus
+    w: 1080
+    h: 2400
+
+# Add as many sources as you wish!
+sources:
+  - url: https://unsplash.com/collections/37006444/walls---landscape
+    destination: Landscape/
