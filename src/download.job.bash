@@ -6,7 +6,10 @@
 # ref: https://stackoverflow.com/a/4774063/3211029
 HERE="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 APP_ROOT="$(cd "$HERE/.." ; pwd -P)"
-CONFIG_FILE="${APP_ROOT}/config.yml"
+
+CONFIG_DIR="${APP_ROOT}/config"
+CONFIG_FILE="${CONFIG_DIR}/config.yml"
+GCONFIG_FILE="${CONFIG_DIR}/gallery-dl.conf.json"
 
 URL_REGEX='^(https?)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]\.[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]$'
 
@@ -46,6 +49,11 @@ function load_config {
         raise "Invalid config file: ${CONFIG_FILE}"
     fi
 
+    # Verify gallery config file existence
+    if [ ! -f "${GCONFIG_FILE}" ]; then
+        raise "Invalid config file: ${GCONFIG_FILE}"
+    fi
+
     # Use jq to read config
     APPDATA=$(yq '.appdata' "$CONFIG_FILE")
     WALLPAPERS_ROOT=$(yq '.wallpapers_root' "$CONFIG_FILE")
@@ -70,12 +78,23 @@ function load_config {
     done
 }
 
-function download_from_sources {
-    # TODO Fetch walls from each source using gallery-dl
-    # Apply resize to specified output sizes
-    echo "Downloading"
+function download_sources {
+    DARCHIVE="${APPDATA}/wallstation.sqlite"
+
+    for ((i = 0; i < $SOURCES_LENGTH; i++))
+    do
+        SOURCE="$(i=$i yq '.sources.[env(i)]' "$CONFIG_FILE")"
+        url="$(echo "$SOURCE" | yq '.url')"
+        des="$(echo "$SOURCE" | yq '.destination')"
+        des="${WALLPAPERS_ROOT}/${des}"
+
+        echo
+        echo "Downloading: ${url}"
+        echo "       Into: ${des}"
+
+        gallery-dl -D "${des}" --download-archive "${DARCHIVE}" -c "${GCONFIG_FILE}" "${url}"
+    done
 }
 
 load_config
-
-
+download_sources
