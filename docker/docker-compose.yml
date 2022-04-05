@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  downloader:
+    build:
+      context: ..
+      dockerfile: docker/downloader.job.dockerfile
+    user: $UID:$GID
+    environment:
+      - TZ=America/Mexico_City
+    volumes:
+      - ..:/opt/wallstation:ro
+      - ../data:/data/runtime
+      - ~/Pictures/Wallstation:/data/wallpapers

@@ -1,3 +1,4 @@
 data/
 config/config.yml
 config/gallery-dl.conf.json
+.env
